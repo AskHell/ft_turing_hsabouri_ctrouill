@@ -36,21 +36,24 @@ instance FromJSON Transition
 instance ToJSON Transition
 
 validTransition :: Machine -> Transition -> Either Error Transition
-validTransition states transition
+validTransition machine transition
     | notElem (to_state transition) (states machine) =
         Left "Error: to_state of transition is not in States"
-    -- To finish
+    | notElem (write transition) (alphabet machine) =
+        Left "Error: write of transition is not in Alphabet"
+    | notElem (Machine.read transition) (alphabet machine) =
+        Left "Error: read of transition is not in Alphabet"
 validTransition _ transition =
     return transition
 
-validTransitionList :: Machine -> (State, [Transition]) -> Either Error [Transition]
+validTransitionList :: Machine -> (State, [Transition]) -> Either Error (State, [Transition])
 validTransitionList machine (name, transitions)
     | notElem name $ states machine =
         Left "Error: Transition list Name must be in States"
     | not $ all (\x -> isRight x) $ map (validTransition machine) $ transitions =
         Left "Error: Every transition must be valid"
-validTransitionList _ (_, transitions) =
-    return transitions
+validTransitionList _ (name, transitions) =
+    return (name, transitions)
 
 data Machine = Machine {
     name        :: String,
@@ -75,7 +78,8 @@ validMachine machine
         Left "Error: Initial must be a part of States"
     | not $ all (\x -> elem x $ states machine) $ finals machine =
         Left "Error: Every Final's elements must be a part of States"
-    | not $ all (\x -> isRight x) $ map (validTransitionList machine) $ toList (transitions machine) = -- Save the result of `map valid $ transitions machine` to return it ?
+validMachine machine
+    | not $ all isRight $ map (validTransitionList machine) $ toList (transitions machine) = -- Save the result of `map valid $ transitions machine` to return it ?
         Left "Error: Every transition must be valid"
 validMachine machine =
     return machine
