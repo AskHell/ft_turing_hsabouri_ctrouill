@@ -21,23 +21,19 @@ type Letter = String
 type State = String
 type Error = String
 
-loop :: ([a], [b]) -> [Either a b] -> ([a], [b])
-loop (l, r) ([]) = (l, r)
-loop (l, r) ((Left a):tail) =
-    loop (a : l, r) tail
-loop (l, r) ((Right b):tail) =
-    loop (l, b : r) tail
-
-choose' :: [a] -> [b] -> Either [a] [b]
-choose' a b
-    | length a == 0 = return b
-choose' a _ =
-    Left a
+stack_either :: ([a], [b]) -> Either a b -> ([a], [b])
+stack_either (l, r) (Left a) =
+    (a : l, r)
+stack_either (l, r) (Right b) =
+    (l, b : r)
 
 reduce' :: [Either a b] -> Either [a] [b]
 reduce' le =
-    let (l, r) = loop ([], []) le in
-    choose' l r
+    let (l, r) = foldl stack_either ([], []) le in
+    case (l, r) of
+        ([], r) -> return r
+        (l, _) -> Left l
+
 
 data Action = LEFT | RIGHT
     deriving (Show, Generic)
