@@ -18,6 +18,7 @@ import Data.Either (isRight)
 import Data.List (intercalate)
 import Data.Aeson (FromJSON, ToJSON)
 import qualified Data.Aeson as Aeson
+import Text.Printf (printf)
 
 type Letter = String
 type State = String
@@ -56,18 +57,18 @@ instance ToJSON Transition
 validTransition :: Machine -> Transition -> Either Error Transition
 validTransition machine transition
     | notElem (to_state transition) (states machine) =
-        Left "Error: to_state of transition is not in States"
+        Left $ printf "\x1b[31mError\x1b[0m: to_state ('\x1b[36m%s\x1b[0m') of transition is not in States" (to_state transition)
     | notElem (write transition) (alphabet machine) =
-        Left "Error: write of transition is not in Alphabet"
+        Left $ printf "\x1b[31mError\x1b[0m: write ('\x1b[36m%s\x1b[0m') of transition is not in Alphabet" (write transition)
     | notElem (Machine.read transition) (alphabet machine) =
-        Left "Error: read of transition is not in Alphabet"
+        Left $ printf "\x1b[31mError\x1b[0m: read ('\x1b[36m%s\x1b[0m') of transition is not in Alphabet" (Machine.read transition)
 validTransition _ transition =
     return transition
 
 validTransitionList :: Machine -> (State, [Transition]) -> Either Error (State, [Transition])
 validTransitionList machine (name, transitions)
     | notElem name $ states machine =
-        Left "Error: Transition list Name must be in States"
+        Left $ printf "\x1b[31mError\x1b[0m: Transition list Name ('\x1b[36m%s\x1b[0m') is not in States" name
 validTransitionList machine (name, transitions) =
     case (reduce' $ map (validTransition machine) $ transitions) of
         Left errors -> Left $ intercalate "\n" errors
