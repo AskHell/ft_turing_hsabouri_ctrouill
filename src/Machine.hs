@@ -94,4 +94,6 @@ encode :: Machine -> ByteString
 encode = Aeson.encode
 
 eitherDecode :: ByteString -> Either Error Machine
-eitherDecode bs = Aeson.eitherDecode bs >>= validMachine
+eitherDecode bs = do
+    decoded <-  Aeson.eitherDecode bs
+    validMachine decoded
