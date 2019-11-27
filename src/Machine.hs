@@ -7,6 +7,8 @@ module Machine (
     Action,
     Transition,
     Machine,
+    encode,
+    eitherDecode
 ) where
 
 import GHC.Generics (Generic)
