@@ -20,23 +20,11 @@ import Data.Aeson (FromJSON, ToJSON)
 import qualified Data.Aeson as Aeson
 import Text.Printf (printf)
 
+import Reduce (reduce')
+
 type Letter = String
 type State = String
 type Error = String
-
-stack_either :: ([a], [b]) -> Either a b -> ([a], [b])
-stack_either (l, r) (Left a) =
-    (a : l, r)
-stack_either (l, r) (Right b) =
-    (l, b : r)
-
-reduce' :: [Either a b] -> Either [a] [b]
-reduce' le =
-    let (l, r) = foldl stack_either ([], []) le in
-    case (l, r) of
-        ([], r) -> return r
-        (l, _) -> Left l
-
 
 data Action = LEFT | RIGHT
     deriving (Show, Generic)
