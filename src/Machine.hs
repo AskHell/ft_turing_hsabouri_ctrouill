@@ -4,9 +4,11 @@
 
 module Machine (
     Letter,
-    Action,
-    Transition,
-    Machine,
+    State,
+    Error,
+    Action (..),
+    Transition(..),
+    Machine(..),
     encode,
     eitherDecode
 ) where
