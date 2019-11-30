@@ -10,12 +10,22 @@ import Text.Printf (printf)
 import Machine ( Machine(..), encode, eitherDecode )
 import Execute ( MachineState(..), step )
 
+execute :: MachineState -> String -> String
+execute m acc
+    | elem (state m) (finals $ machine m) =
+        acc
+execute m acc =
+    let m = step m in
+    execute m $ printf "%s\n%s" acc $ input m
+
+-- solve infinit loop
+
 ft_turing :: String -> Either String Machine -> String
 ft_turing _ (Left s) = s
 ft_turing tape (Right m) =
     let first = tape in
     let machine_state = MachineState 0 (initial m) tape m in
-    printf "%s\n%s\n" first $ input $ step machine_state
+    printf "%s\n%s" first $ execute machine_state ""
     
 
 usage :: IO ()
