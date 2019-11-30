@@ -7,11 +7,16 @@ import System.IO
 import Data.List
 import Text.Printf (printf)
 
-import Machine ( Machine, encode, eitherDecode )
+import Machine ( Machine(..), encode, eitherDecode )
+import Execute ( MachineState(..), step )
 
-getOutput :: Either String Machine -> String
-getOutput (Left s) = s
-getOutput (Right m) = show $ encode m
+ft_turing :: String -> Either String Machine -> String
+ft_turing _ (Left s) = s
+ft_turing tape (Right m) =
+    let first = tape in
+    let machine_state = MachineState 0 (initial m) tape m in
+    printf "%s\n%s\n" first $ input $ step machine_state
+    
 
 usage :: IO ()
 usage = putStrLn "usage: ft_turing [-h] jsonfile input\n\npositional arguments:\n  jsonfile\t\tjson description of the machine\n  input\t\t\tinput of the machine\n\noptional arguments:\n  -h, --help\t\tshow this help message and exit"
@@ -26,7 +31,7 @@ dispatch (help : _)
 dispatch (machine : input : _)
     | (not $ machine == []) && (not $ input == []) = do -- when both are valid
         file_content <- B.readFile machine
-        putStrLn $ getOutput $ eitherDecode file_content
+        putStrLn $ ft_turing input $ eitherDecode file_content
     | machine == [] =
         display_error "jsonfile is an empty string"
     | input == [] =

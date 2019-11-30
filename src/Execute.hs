@@ -1,5 +1,5 @@
 module Execute (
-    MachineState,
+    MachineState(..),
     step
 ) where
 
