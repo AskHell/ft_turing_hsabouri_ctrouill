@@ -8,6 +8,7 @@ import Prelude hiding (read)
 import Data.Map.Strict as M
 import Data.List as L
 import Data.Map.Strict (fromList)
+import Text.Printf (printf)
 
 data MachineState = MachineState {
     position    :: Int,
@@ -62,3 +63,11 @@ step machine_state =
     let possible_actions = [ (read x, x) | x <- transition_list ] in
     let current_read = default_read (itemOf (position machine_state) (input machine_state)) $ blank $ machine machine_state in
     execute machine_state $ L.lookup current_read possible_actions
+
+showMachineState :: MachineState -> String
+showMachineState ms =
+    let pos_string = [ ' ' | _ <- [0..position ms - 1] ] in
+    printf "┏ %s\t- [%s]\n┗ %s⇣" (input ms) (state ms) pos_string
+
+instance Show MachineState where
+    show ms = showMachineState ms

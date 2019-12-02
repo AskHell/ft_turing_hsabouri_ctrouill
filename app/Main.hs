@@ -13,20 +13,19 @@ import Execute ( MachineState(..), step )
 execute :: MachineState -> String -> Int -> String
 execute m acc i
     | elem (state m) (finals $ machine m) =
-        acc
+        printf "%s\n%s" acc $ show m
     | i == 0 =
-        acc
+        printf "%s\n%s" acc $ show m
 execute m acc i =
     let new_m = step m in
-    let new_acc = printf "%s\n%s" acc $ input m in
+    let new_acc = printf "%s\n%s" acc $ show m in
     execute new_m new_acc (i - 1)
 
 ft_turing :: String -> Either String Machine -> String
 ft_turing _ (Left s) = s
 ft_turing tape (Right m) =
-    let first = tape in
     let machine_state = MachineState 0 (initial m) tape m in
-    printf "%s\n%s" first $ execute machine_state "" 1000
+    printf "%s\n" $ execute machine_state "" 1000
 
 usage :: IO ()
 usage = putStrLn "usage: ft_turing [-h] jsonfile input\n\npositional arguments:\n  jsonfile\t\tjson description of the machine\n  input\t\t\tinput of the machine\n\noptional arguments:\n  -h, --help\t\tshow this help message and exit"
