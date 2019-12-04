@@ -9,6 +9,7 @@ import Text.Printf (printf)
 
 import Machine ( Machine(..), encode, eitherDecode )
 import Execute ( MachineState(..), step )
+import Generate ( generatePalindrome )
 
 execute :: MachineState -> String -> Int -> String
 execute m acc i
@@ -34,6 +35,9 @@ display_error :: String -> IO ()
 display_error s = putStrLn $ printf "\x1b[31mError\x1b[0m: %s" s
 
 dispatch :: [String] -> IO ()
+dispatch ("generate" : machine : file)
+    | machine == "palindrome" && (not $ file == []) =
+        putStrLn $ generatePalindrome
 dispatch (help : _)
     | help == "-h" || help == "--help" =
         usage
