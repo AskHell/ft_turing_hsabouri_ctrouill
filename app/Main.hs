@@ -35,8 +35,8 @@ display_error :: String -> IO ()
 display_error s = putStrLn $ printf "\x1b[31mError\x1b[0m: %s" s
 
 dispatch :: [String] -> IO ()
-dispatch ("generate" : machine : file)
-    | machine == "palindrome" && (not $ file == []) =
+dispatch ("generate" : machine : _)
+    | machine == "palindrome" =
         putStrLn $ generatePalindrome
 dispatch (help : _)
     | help == "-h" || help == "--help" =
