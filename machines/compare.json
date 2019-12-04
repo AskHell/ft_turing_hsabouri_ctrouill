@@ -2,7 +2,7 @@
     "name" : "compare",
     "alphabet": [ "1", ".", "-", "Y", "X" ],
     "blank" : ".",
-    "states" : [ "X_search_1", "search_X", "search_Y", "Y_search_1", "final_X", "valid_from_X",
+    "states" : [ "X_search_1", "search_Y_left", "search_X", "search_Y", "Y_search_1", "final_X", "valid_from_X",
         "final_Y", "invalid_fill_left", "validate", "invalidate", "true", "false" ],
     "initial" : "X_search_1",
     "finals" : [ "true", "false"],
@@ -34,7 +34,7 @@
             { "read": "1", "to_state": "search_Y", "write": "1", "action": "RIGHT" }
         ],
         "Y_search_1": [
-            { "read": "1", "to_state": "search_X", "write": "-", "action": "LEFT" },
+            { "read": "1", "to_state": "search_Y_left", "write": "-", "action": "LEFT" },
             { "read": "-", "to_state": "Y_search_1", "write": "-", "action": "RIGHT" },
             { "read": ".", "to_state": "invalid_fill_left", "write": ".", "action": "LEFT" }
         ],

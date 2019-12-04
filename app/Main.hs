@@ -10,22 +10,22 @@ import Text.Printf (printf)
 import Machine ( Machine(..), encode, eitherDecode )
 import Execute ( MachineState(..), step )
 
-execute :: MachineState -> String -> String
-execute m acc
+execute :: MachineState -> String -> Int -> String
+execute m acc i
     | elem (state m) (finals $ machine m) =
         printf "%s\n%s" acc $ show m
-    -- | i == 0 =
-    --    printf "%s\n%s" acc $ show m
-execute m acc =
+    | i == 0 =
+       printf "%s\n%s" acc $ show m
+execute m acc i =
     let new_m = step m in
     let new_acc = printf "%s\n%s" acc $ show m in
-    execute new_m new_acc
+    execute new_m new_acc (i - 1)
 
 ft_turing :: String -> Either String Machine -> String
 ft_turing _ (Left s) = s
 ft_turing tape (Right m) =
     let machine_state = MachineState 0 (initial m) tape m in
-    printf "%s\n" $ execute machine_state ""
+    printf "%s\n" $ execute machine_state "" 10000
 
 usage :: IO ()
 usage = putStrLn "usage: ft_turing [-h] jsonfile input\n\npositional arguments:\n  jsonfile\t\tjson description of the machine\n  input\t\t\tinput of the machine\n\noptional arguments:\n  -h, --help\t\tshow this help message and exit"
