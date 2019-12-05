@@ -2,8 +2,11 @@ module Generate (
     generatePalindrome
 ) where
 
-import Machine as M 
+import Machine as M
+import Data.Map.Strict (fromList)
 import Data.Char (toUpper)
+import Data.ByteString (ByteString)
+import Data.ByteString.UTF8 (toString)
 
 type Alphabet = [M.Letter]
 
@@ -58,13 +61,21 @@ generatePhase2 (alpha, sub_alpha) valid =
     [ Transition x name x M.RIGHT | x <- alpha ]
     )
 
+generateStates :: (Alphabet, Alphabet) -> [(M.State, [M.Transition])]
+generateStates (l, u) =
+    [generateInit (l, u)] ++
+    (map (generateGotoEnd (u, l)) l) ++
+    (map (generateCheck (u, l)) l) ++
+    [generatePhase1 (l, u) True] ++
+    [generatePhase1 (l, u) False] ++
+    [generatePhase2 (l, u) True] ++
+    [generatePhase2 (l, u) False]
+
 generatePalindrome :: String
 generatePalindrome =
-    show $
-    [generateInit (lowerAlphabet, upperAlphabet)] ++
-    (map (generateGotoEnd (upperAlphabet, lowerAlphabet)) lowerAlphabet) ++
-    (map (generateCheck (upperAlphabet, lowerAlphabet)) lowerAlphabet) ++
-    [generatePhase1 (lowerAlphabet, upperAlphabet) True] ++
-    [generatePhase1 (lowerAlphabet, upperAlphabet) False] ++
-    [generatePhase2 (lowerAlphabet, upperAlphabet) True] ++
-    [generatePhase2 (lowerAlphabet, upperAlphabet) False]
+    let transitions_list = generateStates (lowerAlphabet, upperAlphabet) in
+    let transitions = fromList transitions_list in
+    let finals = [ "true", "false" ] in
+    let states = finals ++ [ name | (name, _) <- transitions_list ] in
+    let alphaset = [ ".", "y", "n" ] ++ lowerAlphabet ++ upperAlphabet in
+    toString $ M.encode $ Machine "palindrome" alphaset "." states "init" finals transitions
